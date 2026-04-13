@@ -1,0 +1,35 @@
+syntax = "proto3";
+package ncapd;
+
+option go_package = "github.com/roberttkach/ncapd/proto;ncapdpb";
+
+import "google/protobuf/timestamp.proto";
+
+service ProbeService {
+  rpc Submit (SubmitRequest) returns (SubmitResponse);
+}
+
+message SubmitRequest {
+  string node_id = 1;
+  repeated ProbeResult results = 2;
+}
+
+message ProbeResult {
+  string id = 1;
+  string type = 8;
+  string target_host = 2;
+
+  string status = 3;
+  google.protobuf.Timestamp at = 9;
+
+  int64 latency_ns = 4;
+  double throughput_bps = 5;
+
+  string detail = 6;
+  string error = 7;
+}
+
+message SubmitResponse {
+  bool success = 1;
+  string error = 2;
+}
