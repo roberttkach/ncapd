@@ -1,0 +1,26 @@
+services:
+  ncapd:
+    image: ncapd-integration:latest
+    ports:
+      - "18080:8080"
+    volumes:
+      - ./config.json:/etc/ncapd/config.json:ro
+      - ./certs:/etc/ncapd/certs:ro
+      - ./certs/ncapd-client-ca.crt:/etc/ncapd/ca.crt:ro
+    environment:
+      NCAPD_NODE_ID: "integration-test-node"
+    command: [ "-config", "/etc/ncapd/config.json", "--allow-insecure-master" ]
+    depends_on:
+      - mock-grpc
+    restart: "no"
+
+  mock-grpc:
+    image: ncapd-mock-grpc:latest
+    ports:
+      - "15051:50051"
+    environment:
+      MOCK_GRPC_CERT: /certs/mock-grpc-server.crt
+      MOCK_GRPC_KEY: /certs/mock-grpc-server.key
+    volumes:
+      - ./certs:/certs:ro
+    restart: "no"

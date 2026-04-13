@@ -1,0 +1,20 @@
+FROM golang:1.26.2-alpine@sha256:c2a1f7b2095d046ae14b286b18413a05bb82c9bca9b25fe7ff5efef0f0826166 AS builder
+
+RUN apk add --no-cache ca-certificates git
+
+WORKDIR /build
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY tests/integration/mock_grpc/main.go ./tests/integration/mock_grpc/
+COPY proto/ ./proto/
+
+RUN CGO_ENABLED=0 GOOS=linux go build -trimpath -o /bin/mock-grpc ./tests/integration/mock_grpc
+
+FROM alpine:3.21@sha256:c3f8e73fdb79deaebaa2037150150191b9dcbfba68b4a46d70103204c53f4709 AS runtime
+
+COPY --from=builder /bin/mock-grpc /usr/local/bin/mock-grpc
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+
+EXPOSE 50051
+ENTRYPOINT ["/usr/local/bin/mock-grpc"]

@@ -1,0 +1,149 @@
+{
+  "server": {
+    "addr": ":8080",
+    "master_addr": "mock-grpc:50051",
+    "node_id": "integration-test-node",
+    "tls": {
+      "cert_file": "/etc/ncapd/certs/ncapd-server.crt",
+      "key_file": "/etc/ncapd/certs/ncapd-server.key",
+      "client_ca_file": "/etc/ncapd/certs/ncapd-client-ca.crt"
+    },
+    "master_tls": {
+      "enabled": true,
+      "insecure_skip_verify": true,
+      "ca_file": "",
+      "cert_file": "",
+      "key_file": ""
+    },
+    "auth": {
+      "type": "api_key",
+      "keys": [
+        "test-api-key-1",
+        "test-api-key-2",
+        "test-bearer-token"
+      ],
+      "header": "X-API-Key"
+    },
+    "auth_rate_limit": {
+      "enabled": true,
+      "max_failures": 5,
+      "window_seconds": 60,
+      "ban_seconds": 10
+    },
+    "rate_limit": {
+      "enabled": true,
+      "requests_per_second": 1,
+      "burst": 5
+    },
+    "audit": {
+      "enabled": true
+    },
+    "allowed_source_ips": [
+      "172.16.0.0/12"
+    ]
+  },
+  "log": {
+    "level": "debug"
+  },
+  "scheduler": {
+    "enabled": true
+  },
+  "checks": [
+    {
+      "id": "test_port",
+      "type": "port_blocking",
+      "target": {
+        "host": "telegram.org",
+        "port": 443,
+        "proto": "tcp"
+      },
+      "timeout": "5s",
+      "schedule": "@every 10s"
+    },
+    {
+      "id": "test_ip",
+      "type": "ip_blocking",
+      "target": {
+        "ip": "149.154.167.220",
+        "host": "telegram.org",
+        "port": 443
+      },
+      "timeout": "5s",
+      "schedule": "@every 10s"
+    },
+    {
+      "id": "test_dns",
+      "type": "dns_filtering",
+      "target": {
+        "host": "telegram.org"
+      },
+      "timeout": "5s",
+      "schedule": "@every 10s"
+    },
+    {
+      "id": "test_rst",
+      "type": "rst_injection",
+      "target": {
+        "host": "telegram.org",
+        "port": 443
+      },
+      "timeout": "5s",
+      "schedule": "@every 10s"
+    },
+    {
+      "id": "test_sni",
+      "type": "sni_inspection",
+      "target": {
+        "host": "telegram.org",
+        "port": 443,
+        "sni": "telegram.org"
+      },
+      "timeout": "5s",
+      "schedule": "@every 10s"
+    },
+    {
+      "id": "test_tls_fp",
+      "type": "tls_fingerprint",
+      "target": {
+        "host": "telegram.org",
+        "port": 443,
+        "sni": "telegram.org"
+      },
+      "timeout": "5s",
+      "schedule": "@every 10s"
+    },
+    {
+      "id": "test_proto",
+      "type": "protocol_detection",
+      "target": {
+        "host": "telegram.org",
+        "port": 443,
+        "proto": "https"
+      },
+      "timeout": "5s",
+      "schedule": "@every 10s"
+    },
+    {
+      "id": "test_throttle",
+      "type": "throttling",
+      "target": {
+        "host": "telegram.org",
+        "port": 443,
+        "proto": "https",
+        "throttle_bytes": 1024
+      },
+      "timeout": "10s",
+      "schedule": "@every 10s"
+    },
+    {
+      "id": "test_active",
+      "type": "active_probing",
+      "target": {
+        "host": "telegram.org",
+        "port": 443
+      },
+      "timeout": "5s",
+      "schedule": "@every 10s"
+    }
+  ]
+}

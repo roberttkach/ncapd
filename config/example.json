@@ -1,0 +1,152 @@
+{
+  "server": {
+    "addr": ":8080",
+    "node_id": "",
+    "tls": {
+      "cert_file": "/etc/ncapd/certs/server.crt",
+      "key_file": "/etc/ncapd/certs/server.key",
+      "client_ca_file": ""
+    },
+    "master_addr": "master.internal:50051",
+    "master_tls": {
+      "enabled": false,
+      "insecure_skip_verify": false,
+      "ca_file": "",
+      "cert_file": "",
+      "key_file": ""
+    },
+    "auth": {
+      "type": "api_key",
+      "keys": [
+        "CHANGE"
+      ],
+      "header": "X-API-Key"
+    },
+    "auth_rate_limit": {
+      "enabled": true,
+      "max_failures": 10,
+      "window_seconds": 300,
+      "ban_seconds": 60
+    },
+    "rate_limit": {
+      "enabled": true,
+      "requests_per_second": 10,
+      "burst": 20
+    },
+    "skip_verify": true,
+    "run_cooldown": "10s",
+    "allowed_source_ips": [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16"
+    ],
+    "audit": {
+      "enabled": true
+    }
+  },
+  "log": {
+    "level": "info"
+  },
+  "scheduler": {
+    "enabled": true
+  },
+  "checks": [
+    {
+      "id": "example_port_443",
+      "type": "port_blocking",
+      "target": {
+        "host": "example.com",
+        "port": 443,
+        "proto": "tcp"
+      },
+      "timeout": "5s",
+      "schedule": "@every 30s"
+    },
+    {
+      "id": "example_ip_block",
+      "type": "ip_blocking",
+      "target": {
+        "ip": "1.2.3.4",
+        "host": "example.com",
+        "port": 443
+      },
+      "timeout": "5s",
+      "schedule": "@every 60s"
+    },
+    {
+      "id": "example_dns",
+      "type": "dns_filtering",
+      "target": {
+        "host": "blocked-site.example"
+      },
+      "timeout": "5s",
+      "schedule": "@every 60s"
+    },
+    {
+      "id": "example_rst",
+      "type": "rst_injection",
+      "target": {
+        "host": "example.com",
+        "port": 443
+      },
+      "timeout": "5s",
+      "schedule": "@every 30s"
+    },
+    {
+      "id": "example_sni",
+      "type": "sni_inspection",
+      "target": {
+        "host": "example.com",
+        "port": 443,
+        "sni": "example.com"
+      },
+      "timeout": "10s",
+      "schedule": "@every 60s"
+    },
+    {
+      "id": "example_tls_fp",
+      "type": "tls_fingerprint",
+      "target": {
+        "host": "example.com",
+        "port": 443,
+        "sni": "example.com"
+      },
+      "timeout": "10s",
+      "schedule": "@every 120s"
+    },
+    {
+      "id": "example_protocol",
+      "type": "protocol_detection",
+      "target": {
+        "host": "example.com",
+        "port": 443,
+        "proto": "https"
+      },
+      "timeout": "10s",
+      "schedule": "@every 60s"
+    },
+    {
+      "id": "example_throttle",
+      "type": "throttling",
+      "target": {
+        "host": "example.com",
+        "port": 443,
+        "proto": "https",
+        "throttle_bytes": 2097152
+      },
+      "timeout": "30s",
+      "schedule": "@every 300s"
+    },
+    {
+      "id": "example_active",
+      "type": "active_probing",
+      "target": {
+        "host": "example.com",
+        "port": 443,
+        "fallback_url": "https://example.com/"
+      },
+      "timeout": "10s",
+      "schedule": "@every 120s"
+    }
+  ]
+}
